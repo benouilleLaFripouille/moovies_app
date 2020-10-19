@@ -1,0 +1,84 @@
+<div class="container film">
+    <div class="imgFilm">
+        <img id="imgFilm" src="" alt="">
+    </div>
+    <div class="contentFilm">
+
+        <h1 id="titreFilm"></h1>
+        <p id="descriptionFilm"></p>
+        <div class="jaime">
+            <!-- // le diese dans le href definit une ancre pour ne pas que la page recharge
+            -->
+            <a href="#" class="like" onclick="like(true)"><img src="./../public/image/star.png" alt="like"></a>
+            <a href="#" class="dislike" onclick="dislike(false)"><img src="./../public/image/emoji.png" alt="dislike"></a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    const apiKey = '97484e1e36af70d31a40a628b9f4595d';
+    let id = {{id}};
+    let film;
+
+    axios.get('https://api.themoviedb.org/3/movie/'+id, {
+        params: {
+            movie_id: id,
+            api_key: apiKey,
+            language: 'fr-FR',
+        }
+    }).then((res)=>{
+        console.log(res.data)
+        displayFilm(res.data);
+    }).catch((err)=>{
+        console.log(err)
+    });
+    function displayFilm(Film){
+        film=Film;
+        document.querySelector('#titreFilm').innerHTML= Film.title
+        document.querySelector('#imgFilm').setAttribute("src", `https://image.tmdb.org/t/p/original${Film.poster_path}`)
+        document.querySelector('#descriptionFilm').innerHTML = Film.overview
+    }
+
+    function like(){
+
+
+        axios.get('http://127.0.0.1:3000/like/'+id + '/' + film.title) // facon d ecrire avec concaténation sans les `` et avec les +
+                .then((res)=>{
+                    if(res.status===200 && res.status===true){
+                        let msg = document.createElement('span');
+                        msg.innerText=("J'aime");
+                        document.querySelector('.jaime').appendChild(msg); // on va attraper avec .jaime pour attrapper la classe jaime
+                    }if(res.status===201)
+                    {
+                        let msgExist = document.createElement('span');
+                        msgExist.innerText = ("Vous aimez dejà !");
+                        document.querySelector('.jaime').appendChild(msgExist);
+                    }
+
+                })
+
+    .catch(( error)=>{
+        })
+
+    }
+    function dislike() {
+        axios.get(`http://127.0.0.1:3000/dislike/${id}/${film.title}`) // facon d'ecrire avec `` et dollar sans les +
+
+                .then((res)=>{
+                    if(res.status===200 && res.status===false){
+                        let msg = document.createElement('span');
+                        msg.innerText=("J'aime pas");
+                        document.querySelector('.jaime').appendChild(msg); // on va attraper avec .jaime pour attrapper la classe jaime
+                    }if(res.status===201)
+                    {
+                        let msgExist = document.createElement('span');
+                        msgExist.innerText = ("Vous aimez dejà pas !");
+                        document.querySelector('.jaime').appendChild(msgExist);
+                    }
+
+                })
+                .catch(( error)=>{
+                    console.log(error)
+                })
+    }
+</script>

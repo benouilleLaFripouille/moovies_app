@@ -1,0 +1,63 @@
+
+<h1>Search for Moovies</h1>
+
+<div class = "container listFilm">
+    <div>
+        <input type="text" name="rechercher" id="rechercher" placeholder="rechercher votre film">
+        <button  type="submit " id="search" onclick="searchMovie()" >Rechercher</button>
+
+        <div id="result">
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>
+    const apiKey="4e82a73657770b8ea7e0dc7eebb6039f";
+    const valueSearch = document.querySelector("#rechercher");
+    const result = document.querySelector("#result");
+
+
+    function searchMovie() {
+
+        axios.get("https://api.themoviedb.org/3/search/movie", {
+            params: {
+                api_key :apiKey,
+                language: "fr-FR",
+                page:1,
+                include_adult:true,
+                query: valueSearch.value
+            }
+        })
+                .then((success)=>{
+                    displayResultat(success.data.results)
+                })
+                .catch((error)=>{
+                    console.log(error)
+                })
+        function displayResultat (Result){
+            result.innerHTML='';
+            for(let resultat of Result){
+                div=document.createElement("div");
+                div.classList.add('card');
+                voirPlus=document.createElement('a');
+                voirPlus.setAttribute("href", `mooviesSearch/${resultat.id}`)
+                li = document.createElement("li");
+                h1=document.createElement('h1');
+                img= document.createElement('img');
+                img.setAttribute("src", `https://image.tmdb.org/t/p/original${resultat.poster_path}`);
+                li.innerText = `  ${resultat.title}`;
+                h1.innerText = ` Le résultat de votre recherche :`;
+                voirPlus.innerText=" voir plus  "
+                div.appendChild(li);
+                div.appendChild(voirPlus);
+                div.appendChild(img);
+                result.appendChild(div)
+            }
+        }
+    }
+</script>
+
+
+
+
